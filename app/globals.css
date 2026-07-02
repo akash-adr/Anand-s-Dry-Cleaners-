@@ -1,26 +1,254 @@
 @import "tailwindcss";
 
+/* ─── Brand Design Tokens ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --teal-primary:   #096C6C;
+  --teal-hover:     #0a7f7f;
+  --teal-light:     #e6f4f4;
+  --pure-white:     #FFFFFF;
+  --soft-white:     #F8FBFB;
+  --alt-surface:    #F4F8F8;
+  --text-heading:   #111111;
+  --text-body:      #4B5563;
+  --text-muted:     #6B7280;
+  --dark-bg:        #FFFFFF;        /* kept for legacy refs */
+  --accent-gold:    #096C6C;        /* remapped — all accent-gold → teal */
+  --peacock-blue:   #096C6C;
+  --deep-peacock:   #096C6C;
+
+  --font-display: "Clash Display", system-ui, sans-serif;
+  --font-body:    "Inter Tight",   system-ui, sans-serif;
+  --font-satoshi: "Satoshi",       system-ui, sans-serif;
 }
 
+/* ─── Tailwind v4 Theme Extension ─── */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-teal-primary:  var(--teal-primary);
+  --color-teal-hover:    var(--teal-hover);
+  --color-teal-light:    var(--teal-light);
+  --color-peacock-blue:  var(--teal-primary);
+  --color-deep-peacock:  var(--teal-primary);
+  --color-accent-gold:   var(--teal-primary);
+  --color-pure-white:    var(--pure-white);
+  --color-soft-white:    var(--soft-white);
+  --color-dark-bg:       var(--dark-bg);
+  --font-display:        var(--font-display);
+  --font-body:           var(--font-body);
+  --font-satoshi:        var(--font-satoshi);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ─── Base Styles ─── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--pure-white);
+  color: var(--text-heading);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f6f6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(9, 108, 108, 0.35);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(9, 108, 108, 0.55);
+}
+
+/* ─── Animated Text Gradient — teal sweep ─── */
+.gradient-text {
+  background: linear-gradient(
+    90deg,
+    #FFFFFF   0%,
+    #FFFDF7   15%,
+    #F6F1E6   30%,
+    #BFE4E1   50%,
+    #FFFDF7   70%,
+    #FFFFFF  100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gradientSweep 6s ease-in-out infinite;
+}
+
+.gradient-text-reveal {
+  background: linear-gradient(
+    90deg,
+    #FFFFFF   0%,
+    #FFFDF7   15%,
+    #F6F1E6   30%,
+    #BFE4E1   50%,
+    #FFFDF7   70%,
+    #FFFFFF  100%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes gradientSweep {
+  0%   { background-position: 100% center; }
+  50%  { background-position: 0%   center; }
+  100% { background-position: 100% center; }
+}
+
+/* ─── Logo Breathing Animation ─── */
+@keyframes breathe {
+  0%, 100% { transform: scale(1);    opacity: 0.9; }
+  50%       { transform: scale(1.03); opacity: 1;   }
+}
+
+.logo-breathe {
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* ─── CTA Bounce Arrow ─── */
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0);  }
+  50%       { transform: translateY(6px); }
+}
+
+.bounce-arrow {
+  animation: bounceDown 2s ease-in-out infinite;
+}
+
+/* ─── Button Ripple ─── */
+@keyframes ripple {
+  0%   { transform: scale(0); opacity: 0.4; }
+  100% { transform: scale(4); opacity: 0;   }
+}
+
+.btn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  animation: ripple 0.6s ease-out forwards;
+  pointer-events: none;
+}
+
+/* ─── Particle Float ─── */
+@keyframes particleFloat {
+  0%, 100% { transform: translateY(0)     translateX(0);   }
+  25%       { transform: translateY(-15px) translateX(5px); }
+  50%       { transform: translateY(-5px)  translateX(-5px); }
+  75%       { transform: translateY(-20px) translateX(3px); }
+}
+
+/* ─── Glassmorphism Button — solid teal primary ─── */
+.glass-btn {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: var(--teal-primary);
+  border: 1px solid rgba(9, 108, 108, 0.25);
+  border-radius: 9999px;
+  color: #ffffff;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-btn:hover {
+  transform: translateY(-3px);
+  background: var(--teal-hover);
+  border-color: rgba(9, 108, 108, 0.45);
+  box-shadow:
+    0 8px 32px rgba(9, 108, 108, 0.28),
+    0 0 20px  rgba(9, 108, 108, 0.12),
+    inset 0 0 20px rgba(255, 255, 255, 0.06);
+}
+
+.glass-btn::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 9999px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0),
+    rgba(9, 108, 108, 0),
+    rgba(255, 255, 255, 0)
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-btn:hover::before {
+  opacity: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(9, 108, 108, 0.20),
+    rgba(255, 255, 255, 0.35)
+  );
+}
+
+/* ─── Scene Text Styles ─── */
+.scene-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.8rem, 6vw, 5.8rem);
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+}
+
+.scene-tagline {
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: clamp(1rem, 2vw, 1.4rem);
+  letter-spacing: 0.02em;
+  opacity: 0.75;
+  color: #096C6C;
+}
+
+.brand-headline {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 4.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* ─── Text glow — light-world drop shadow ─── */
+.text-glow-wrapper {
+  filter:
+    drop-shadow(0 2px 14px rgba(9, 108, 108, 0.22))
+    drop-shadow(0 0 30px rgba(9, 108, 108, 0.10));
+}
+
+/* ─── Brand Reveal Glow — soft teal radial ─── */
+.brand-glow {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 50%,
+    rgba(9, 108, 108, 0.10) 0%,
+    rgba(9, 108, 108, 0.04) 40%,
+    transparent 70%
+  );
 }
