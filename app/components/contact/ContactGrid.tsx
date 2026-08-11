@@ -18,7 +18,7 @@ import { playBubblePop, playSuccessChime } from "./AudioEngine";
    Types
 ───────────────────────────────────────────── */
 interface ContactGridProps {
-  onSubmit: (data: { name: string; email: string; phone: string; message: string }) => void;
+  onSubmit: (data: { name: string; email: string; phone: string; message: string }) => Promise<void> | void;
 }
 
 type FormData = { name: string; email: string; phone: string; message: string };
@@ -30,6 +30,7 @@ export default function ContactGrid({ onSubmit }: ContactGridProps) {
   const [formData, setFormData] = useState<FormData>({ name: "", email: "", phone: "", message: "" });
   const [errors,   setErrors]   = useState<Partial<FormData>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /* ── Handlers ── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -51,12 +52,20 @@ export default function ContactGrid({ onSubmit }: ContactGridProps) {
     return true;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-    setSubmitted(true);
-    playSuccessChime();
-    onSubmit(formData);
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+      setSubmitted(true);
+      playSuccessChime();
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -92,31 +101,31 @@ export default function ContactGrid({ onSubmit }: ContactGridProps) {
         {/* Top sheen */}
         <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-white/60 to-transparent pointer-events-none rounded-t-[40px]" />
 
-        {/* ── Section header ── */}
-        <div className="flex flex-col items-center justify-center text-center max-w-xl mx-auto" style={{ marginBottom: "48px" }}>
-          <div className="w-14 h-14 rounded-full bg-[#096C6C]/10 border border-[#096C6C]/20 flex items-center justify-center" style={{ marginBottom: "24px" }}>
-            <Mail className="w-6 h-6 text-[#096C6C]" />
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 font-display" style={{ marginBottom: "12px" }}>
-            Send Us a Message
-          </h2>
-          <p className="text-xs md:text-sm text-slate-500 font-body leading-relaxed">
-            Fill in your details below and we&apos;ll get back to you as soon as possible.
-          </p>
-        </div>
-
         {/* ── Form / Success AnimatePresence ── */}
         <AnimatePresence mode="wait">
           {!submitted ? (
-            <motion.form
+            <motion.div
               key="grid-form"
-              onSubmit={handleSubmit}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0, y: -16 }}
             >
-              {/* ── Grid: Name / Email / Phone / Message ── */}
-              <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "32px" }}>
+              {/* ── Section header ── */}
+              <div className="flex flex-col items-center justify-center text-center max-w-xl mx-auto" style={{ marginBottom: "48px" }}>
+                <div className="w-14 h-14 rounded-full bg-[#096C6C]/10 border border-[#096C6C]/20 flex items-center justify-center" style={{ marginBottom: "24px" }}>
+                  <Mail className="w-6 h-6 text-[#096C6C]" />
+                </div>
+                <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-slate-900 font-display" style={{ marginBottom: "12px" }}>
+                  Send Us a Message
+                </h2>
+                <p className="text-xs md:text-sm text-slate-500 font-body leading-relaxed">
+                  Fill in your details below and we&apos;ll get back to you as soon as possible.
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit}>
+                {/* ── Grid: Name / Email / Phone / Message ── */}
+                <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "32px" }}>
 
                 {/* Full Name */}
                 <div className="flex flex-col">
@@ -297,16 +306,27 @@ export default function ContactGrid({ onSubmit }: ContactGridProps) {
                 </button>
                 <motion.button
                   type="submit"
-                  className="flex items-center justify-center gap-2 rounded-full bg-[#111111] hover:bg-[#096C6C] text-white font-mono font-bold text-xs tracking-wider shadow-xs transition-colors duration-300 cursor-pointer w-full sm:w-auto border border-transparent"
+                  disabled={isSubmitting}
+                  className="flex items-center justify-center gap-2 rounded-full bg-[#111111] hover:bg-[#096C6C] text-white font-mono font-bold text-xs tracking-wider shadow-xs transition-colors duration-300 cursor-pointer w-full sm:w-auto border border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ padding: "18px 40px" }}
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.96 }}
+                  whileHover={!isSubmitting ? { scale: 1.04 } : {}}
+                  whileTap={!isSubmitting ? { scale: 0.96 } : {}}
                 >
-                  <Send className="w-4 h-4" />
-                  LAUNCH MESSAGE VESSEL
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      SENDING...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      LAUNCH MESSAGE VESSEL
+                    </>
+                  )}
                 </motion.button>
               </div>
-            </motion.form>
+              </form>
+            </motion.div>
 
           ) : (
             /* ── Success screen ── */

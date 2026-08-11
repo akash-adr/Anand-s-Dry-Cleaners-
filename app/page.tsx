@@ -9,10 +9,12 @@ import HowItWorks from "./components/HowItWorks";
 import OurBranches from "./components/OurBranches";
 import ContactUs from "./components/contact/ContactUs";
 import Footer from "./components/Footer";
+import LoadingScreen from "./components/LoadingScreen";
 
 export default function Home() {
   return (
     <main className="overflow-x-hidden">
+      <LoadingScreen />
       <FloatingNavbar />
 
       {/* ─── Premium Intro Hero (Cinematic Video) ─── */}

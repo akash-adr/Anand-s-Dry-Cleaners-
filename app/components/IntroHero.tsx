@@ -1,9 +1,20 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function IntroHero() {
+  const containerRef = useRef<HTMLSelectElement | null>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef as any,
+    offset: ["start start", "end start"],
+  });
+
+  // Parallax and fade for the text
+  const textOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const textY = useTransform(scrollYProgress, [0, 1], [0, 80]);
+
   useEffect(() => {
     // Disable browser scroll restoration so refreshes never jump to a
     // previously visited anchor (e.g. #contact-us).
@@ -32,7 +43,8 @@ export default function IntroHero() {
   return (
     <section 
       id="home"
-      className="relative w-full h-screen min-h-[600px] flex flex-col justify-center overflow-hidden bg-black"
+      ref={containerRef as any}
+      className="relative w-full h-screen min-h-[600px] flex flex-col justify-center overflow-hidden bg-transparent"
     >
       {/* ── Background Video ── */}
       <div className="absolute inset-0 w-full h-full">
@@ -46,22 +58,26 @@ export default function IntroHero() {
           <source src="/hero.mp4" type="video/mp4" />
         </video>
         {/* Subtle dark overlay for contrast */}
-        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         {/* ── Cinematic bottom fade — seamless handoff to scroll sequence ── */}
         <div
           className="absolute bottom-0 left-0 w-full pointer-events-none"
           style={{
-            height: "18vh",
-            background: "linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.85) 100%)",
+            height: "25vh",
+            background: "linear-gradient(to bottom, transparent 0%, rgba(9,108,108,0.15) 50%, rgba(9,108,108,0.3) 100%)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            maskImage: "linear-gradient(to bottom, transparent, black 80%)",
+            WebkitMaskImage: "linear-gradient(to bottom, transparent, black 80%)",
             zIndex: 2,
           }}
         />
       </div>
 
       {/* ── Main Typography Content ── */}
-      <div
+      <motion.div
+        style={{ opacity: textOpacity, y: textY, paddingLeft: "clamp(40px, 7vw, 96px)" }}
         className="relative z-10 w-full max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16 flex flex-col items-start justify-center"
-        style={{ paddingLeft: "clamp(40px, 7vw, 96px)" }}
       >
         <h1 className="flex flex-col font-display font-extrabold text-white tracking-tight leading-[0.95]">
           <motion.span 
@@ -96,12 +112,12 @@ export default function IntroHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
-          className="font-serif italic text-[#096C6C] mt-8 md:mt-12 drop-shadow-[0_2px_4px_rgba(0,0,0,0.4)]"
+          className="font-serif italic text-white/90 mt-8 md:mt-12 drop-shadow-[0_4px_8px_rgba(0,0,0,0.6)]"
           style={{ fontSize: "clamp(1.5rem, 3vw, 2.5rem)" }}
         >
           Care Beyond Clean
         </motion.p>
-      </div>
+      </motion.div>
 
       {/* ── Scroll Down Indicator ── */}
       <motion.div 

@@ -1,0 +1,26 @@
+# ----------------------------------------------------------------------
+# Passenger Node.js Configuration for cPanel
+# ----------------------------------------------------------------------
+# NOTE: If you are using the "Setup Node.js App" wizard in cPanel, 
+# cPanel will usually generate this file automatically in your public_html directory.
+# If you are doing it manually, you can place this in your public_html folder.
+
+<IfModule mod_passenger.c>
+  # Tell Passenger this is a Node.js application
+  PassengerAppType node
+  
+  # The entry point of our application
+  PassengerStartupFile server.js
+  
+  # IMPORTANT: Update this to point to the absolute path of your project root
+  # For example: /home/yourcpanelusername/anands-laundry-app
+  PassengerAppRoot /home/USERNAME/APP_DIRECTORY
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>

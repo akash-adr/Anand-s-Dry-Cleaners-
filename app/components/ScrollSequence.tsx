@@ -75,7 +75,7 @@ export default function ScrollSequence() {
       ref={sectionRef}
       id="scroll-sequence"
       className="relative w-full"
-      style={{ height: "280vh" }}
+      style={{ height: "280vh", backgroundColor: "transparent" }}
     >
       {/*
         ── Viewport-height inner wrapper ────────────────────────────────────
@@ -93,9 +93,7 @@ export default function ScrollSequence() {
         className="relative w-full overflow-hidden"
         style={{
           height: "100vh",
-          background: "#000",          // prevents white flash before canvas loads
-          opacity: active ? 1 : 0,
-          transition: "opacity 0.5s ease",
+          backgroundColor: "transparent",
         }}
       >
         {/* Layer 1 — Frame sequence canvas (z-index: 0) */}
@@ -120,8 +118,13 @@ export default function ScrollSequence() {
         <div
           className="absolute top-0 left-0 w-full pointer-events-none"
           style={{
-            height: "10vh",
-            background: "linear-gradient(to bottom, rgba(0,0,0,0.75) 0%, transparent 100%)",
+            height: "25vh",
+            background: "linear-gradient(to bottom, rgba(9,108,108,0.3) 0%, rgba(9,108,108,0.15) 50%, transparent 100%)",
+            backdropFilter: "blur(12px)",
+            WebkitBackdropFilter: "blur(12px)",
+            maskImage: "linear-gradient(to top, transparent, black 80%)",
+            WebkitMaskImage: "linear-gradient(to top, transparent, black 80%)",
+            opacity: Math.max(0, 1 - (scrollProgress * 8)),
             zIndex: 20,
           }}
         />

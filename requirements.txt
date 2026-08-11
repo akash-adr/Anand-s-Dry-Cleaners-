@@ -1,0 +1,37 @@
+# SERVER REQUIREMENTS FOR HOSTING
+
+IMPORTANT NOTE TO HOSTING ADMINISTRATOR:
+This is a Next.js (Node.js) application. Unlike Python applications which use 'pip install -r requirements.txt', Node.js apps rely on the 'package.json' file for dependency management.
+
+---------------------------------------
+1. SYSTEM REQUIREMENTS:
+---------------------------------------
+- Node.js: Version 18.17.0 or higher (v20.x is highly recommended)
+- npm: Included automatically with Node.js
+- Phusion Passenger (if using cPanel Node.js Selector)
+
+---------------------------------------
+2. INSTALLATION INSTRUCTIONS:
+---------------------------------------
+To install all necessary dependencies, navigate to the root directory of this project via SSH/Terminal and simply run:
+
+    npm install
+
+(This command automatically reads 'package.json' and installs all required packages securely).
+
+---------------------------------------
+3. BUILD INSTRUCTIONS (CRITICAL):
+---------------------------------------
+After installing dependencies, you MUST build the project to generate the production standalone bundle before starting the server. Run:
+
+    npm run build
+
+---------------------------------------
+4. LIST OF MAIN DEPENDENCIES:
+---------------------------------------
+(You do not need to install these manually, 'npm install' handles this automatically)
+- next (v16.x) - Core Framework
+- react / react-dom (v19.x) - UI Library
+- nodemailer - Backend SMTP Email Transmission
+- framer-motion & gsap - UI Animations
+- tailwindcss - Styling Engine

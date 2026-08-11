@@ -197,8 +197,8 @@ export function FloatingNavbar() {
 
       {/* ─── Mobile Hamburger Button (below md) ─── */}
       <motion.button
-        className="fixed top-6 right-5 sm:right-8 z-[100] md:hidden pointer-events-auto flex items-center justify-center rounded-full bg-white/90 backdrop-blur-[16px] border border-[#096C6C]/[0.12] shadow-[0_4px_20px_rgba(9,108,108,0.10)]"
-        style={{ width: "40px", height: "40px" }}
+        className="fixed top-6 right-5 sm:right-8 z-[100] md:hidden pointer-events-auto flex items-center justify-center rounded-full bg-white/95 backdrop-blur-[20px] border border-[#096C6C]/[0.15] shadow-[0_8px_32px_rgba(9,108,108,0.15)] hover:shadow-[0_12px_40px_rgba(9,108,108,0.2)] transition-all duration-300 hover:scale-105 active:scale-95"
+        style={{ width: "56px", height: "56px" }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.2 }}
@@ -206,7 +206,7 @@ export function FloatingNavbar() {
         aria-label="Toggle navigation menu"
         aria-expanded={menuOpen}
       >
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="#096C6C" strokeWidth="1.8" strokeLinecap="round">
+        <svg width="22" height="22" viewBox="0 0 18 18" fill="none" stroke="#096C6C" strokeWidth="1.6" strokeLinecap="round">
           {menuOpen ? (
             <>
               <path d="M3 3l12 12M15 3L3 15" />
@@ -230,7 +230,7 @@ export function FloatingNavbar() {
             transition={{ duration: 0.22, ease: "easeOut" }}
             className="fixed top-[76px] left-5 right-5 sm:left-8 sm:right-8 z-[99] md:hidden rounded-[24px] bg-white/95 backdrop-blur-[24px] border border-[#096C6C]/[0.12] shadow-[0_16px_48px_rgba(9,108,108,0.12)] overflow-hidden"
           >
-            <nav className="flex flex-col py-3">
+            <nav className="flex flex-col" style={{ padding: "16px 0" }}>
               {navItems.map((item) => {
                 const isActive = activeSection === item.id;
                 return (
@@ -239,14 +239,15 @@ export function FloatingNavbar() {
                     href={`#${item.id}`}
                     onClick={(e) => handleNavClick(e, item.id)}
                     className={cn(
-                      "flex items-center px-6 py-3.5 font-satoshi text-[16px] font-semibold tracking-wide transition-colors duration-200",
+                      "flex items-center font-satoshi text-[17px] font-semibold tracking-wide transition-colors duration-200 relative",
                       isActive
                         ? "text-[#096C6C] bg-[#096C6C]/[0.06]"
                         : "text-[#444444] hover:text-[#096C6C] hover:bg-[#096C6C]/[0.04]"
                     )}
+                    style={{ padding: "16px 32px" }}
                   >
                     {isActive && (
-                      <span className="mr-2.5 w-1.5 h-1.5 rounded-full bg-[#096C6C] flex-shrink-0" />
+                      <span className="mr-3 w-1.5 h-1.5 rounded-full bg-[#096C6C] flex-shrink-0" />
                     )}
                     {item.name}
                   </a>

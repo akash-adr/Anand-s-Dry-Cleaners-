@@ -23,7 +23,7 @@ import { playBubblePop, playSuccessChime } from "./AudioEngine";
 type FormStep = "name" | "email" | "phone" | "message" | "review" | "submitted";
 
 interface ContactWizardProps {
-  onSubmit: (data: { name: string; email: string; phone: string; message: string }) => void;
+  onSubmit: (data: { name: string; email: string; phone: string; message: string }) => Promise<void> | void;
 }
 
 /* ─────────────────────────────────────────────
@@ -62,10 +62,11 @@ const STEP_ICONS: Record<string, React.ReactNode> = {
    Component
 ───────────────────────────────────────────── */
 export default function ContactWizard({ onSubmit }: ContactWizardProps) {
-  const [step,      setStep]      = useState<FormStep>("name");
-  const [formData,  setFormData]  = useState({ name: "", email: "", phone: "", message: "" });
+  const [step, setStep] = useState<FormStep>("name");
+  const [formData, setFormData] = useState({ name: "", email: "", phone: "", message: "" });
   const [inputVal,  setInputVal]  = useState("");
   const [errorText, setErrorText] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
 
@@ -151,12 +152,20 @@ export default function ContactWizard({ onSubmit }: ContactWizardProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (step !== "review") return;
-    playSuccessChime();
-    onSubmit(formData);
-    setStep("submitted");
+    setIsSubmitting(true);
+    try {
+      await onSubmit(formData);
+      playSuccessChime();
+      setStep("submitted");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send message. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -373,7 +382,8 @@ export default function ContactWizard({ onSubmit }: ContactWizardProps) {
                           <motion.button
                             type="button"
                             onClick={handleNext}
-                            className="flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#111111] hover:bg-[#096C6C] text-white font-mono text-[11px] tracking-widest font-bold transition-all duration-300 border border-transparent cursor-pointer"
+                            className="flex items-center justify-center gap-2 rounded-full bg-[#111111] hover:bg-[#096C6C] text-white font-mono text-xs tracking-wider shadow-sm transition-colors duration-300 cursor-pointer w-full sm:w-auto border border-transparent"
+                            style={{ padding: "16px 36px" }}
                             whileHover={{ scale: 1.03, boxShadow: "0 6px 16px rgba(0,0,0,0.15)" }}
                             whileTap={{ scale: 0.96 }}
                           >
@@ -542,13 +552,23 @@ export default function ContactWizard({ onSubmit }: ContactWizardProps) {
                     </button>
                     <motion.button
                       type="submit"
-                      className="flex items-center justify-center gap-2 rounded-full bg-[#096C6C] hover:bg-[#075A5A] text-white font-mono font-bold text-xs tracking-wider shadow-sm cursor-pointer border border-transparent transition-colors duration-200"
+                      disabled={isSubmitting}
+                      className="flex items-center justify-center gap-2 rounded-full bg-[#096C6C] hover:bg-[#075A5A] text-white font-mono font-bold text-xs tracking-wider shadow-sm cursor-pointer border border-transparent transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                       style={{ padding: "16px 40px" }}
-                      whileHover={{ scale: 1.03, boxShadow: "0 8px 20px rgba(9,108,108,0.25)" }}
-                      whileTap={{ scale: 0.96 }}
+                      whileHover={!isSubmitting ? { scale: 1.03, boxShadow: "0 8px 20px rgba(9,108,108,0.25)" } : {}}
+                      whileTap={!isSubmitting ? { scale: 0.96 } : {}}
                     >
-                      <Send className="w-4 h-4" />
-                      SEND INQUIRY
+                      {isSubmitting ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          SENDING...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4" />
+                          SEND INQUIRY
+                        </>
+                      )}
                     </motion.button>
                   </form>
                 </motion.div>

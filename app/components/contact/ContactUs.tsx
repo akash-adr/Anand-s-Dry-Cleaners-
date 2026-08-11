@@ -21,8 +21,15 @@ export default function ContactUs() {
     setMode(newMode);
   };
 
-  const handleInquirySubmit = (data: { name: string; email: string; phone: string; message: string }) => {
-    console.log("Inquiry submitted:", data);
+  const handleInquirySubmit = async (data: { name: string; email: string; phone: string; message: string }) => {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to send inquiry");
+    }
   };
 
   return (
